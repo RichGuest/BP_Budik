@@ -1,0 +1,7 @@
+{
+  "name": "budik",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
