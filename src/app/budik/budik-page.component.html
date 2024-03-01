@@ -1,0 +1,75 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Přizpůsobení</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-button (click)="openPermissions()" fill="clear">
+      Oprávnění
+    </ion-button>
+    <ion-button (click)="openVypnutiSwipe()" fill="clear">
+      Vypnutí Swipe
+    </ion-button>
+  </ion-content>  
+</ion-menu>
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Budík</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+
+  <ion-content>
+    <ion-list>
+    <div *ngFor="let alarm of alarms; let i = index">
+      <ion-card>
+        <img class="obrazky" alt="Image for time" [src]="getImageForTime(alarm.time)" />
+        <ion-card-header>
+          <!-- <ion-card-title>
+          <ion-toggle  [checked]="true" justify="space-between">ČAS</ion-toggle>
+        </ion-card-title> -->
+        <ion-toggle class="text" [checked]="alarm.enabled" (ionChange)="toggleAlarm(i)" justify="space-between">{{alarm.time}}</ion-toggle>
+      
+          <ion-card-subtitle>
+            <ion-list class="dny">
+              <ion-item>
+                <ion-badge class="badges" *ngFor="let day of alarm.days" [color]="getBadgeColor(day)">
+                  {{ day }}
+                </ion-badge>
+              
+            </ion-item>
+          </ion-list>
+        </ion-card-subtitle>
+        <ion-toggle class="vibrace" justify="space-between" *ngIf="alarm.vibrations" [checked]="alarm.vibrations" [disabled]="true">Vibrace</ion-toggle>
+    
+        <!-- Disabled toggle pro vibrace, bude zobrazen pokud jsou vibrace vypnuty -->
+        <ion-toggle class="vibrace" justify="space-between" *ngIf="!alarm.vibrations" [checked]="alarm.vibrations" disabled>Vibrace</ion-toggle>
+      </ion-card-header>
+    
+      <ion-card-content>
+        <div>
+          <ion-icon class="ikonka" name="volume-high"></ion-icon> <p>{{alarm.tone}}</p> <br>
+        </div>
+        <div>
+          <ion-icon class="ikonka" name="trash-outline"></ion-icon> <ion-button (click)="deleteAlarm(i)" fill="clear">Smazat</ion-button>
+    
+        </div>
+    
+      </ion-card-content>
+    
+    </ion-card>
+  </div>
+</ion-list>
+
+
+
+  <div class="plus_tlacitko">
+    <ion-icon expand="full" (click)="alarmCreate()" name="add-circle"></ion-icon>
+  </div>
+</ion-content>

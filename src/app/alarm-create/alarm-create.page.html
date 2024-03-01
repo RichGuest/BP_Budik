@@ -1,0 +1,122 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Vytvoření budíku</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <p>odsazeni</p>
+  <div class="alarm-settings">
+
+    <ion-item>
+
+      <ion-grid [fixed]="true">
+        <ion-row class="ion-justify-content-center">
+          <ion-col>
+            <ion-button size="large" shape="round" id="open-modal" expand="block">{{ selectedTime }}</ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button shape="round" size="large" id="open-picker" expand="block">
+              {{ 'DAY' }}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+        <ng-template>
+          <ion-header class="centered-header">
+            <ion-toolbar>
+              <ion-buttons slot="start">
+                <ion-button (click)="cancel()">Zavřít</ion-button>
+              </ion-buttons>
+              <ion-title>Vyberte čas</ion-title>
+              <ion-buttons slot="end">
+                <ion-button (click)="confirmTime()" [strong]="true">Ok</ion-button>
+              </ion-buttons>
+            </ion-toolbar>
+          </ion-header>
+          <ion-content class="centered-content">
+            <ion-item>
+              <ion-datetime [(ngModel)]="cas" presentation="time"></ion-datetime>
+            </ion-item>
+          </ion-content>
+        </ng-template>
+      </ion-modal>
+
+    </ion-item>
+
+    
+
+    <ion-item>
+      <ion-label>Znělka</ion-label>
+      <ion-select [(ngModel)]="selectedTone" (ionChange)="setSelectedTone($event.detail.value)"
+        placeholder="Vyberte znělku">
+        <ion-select-option value="AirCraft">AirCraft</ion-select-option>
+        <ion-select-option value="Beep-Beep">Beep-Beep</ion-select-option>
+        <ion-select-option value="iPhone">iPhone</ion-select-option>
+      </ion-select>
+
+    </ion-item>
+    <ion-item >
+      <ion-grid>
+        <ion-row>
+          <ion-col size="2" class="zvuk">
+            <ion-icon name="volume-high"></ion-icon>
+          </ion-col>
+          <ion-col size="10" class="zvuk" >
+            <ion-range min="0" max="100" [(ngModel)]="volume" (ionChange)="updateVolume()" pin="true"></ion-range>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+    <!-- <ion-item>
+      <ion-icon name="volume-high"></ion-icon>
+      <ion-range min="0" max="100" [(ngModel)]="volume" (ionChange)="updateVolume()" pin="true"></ion-range>
+    </ion-item> -->
+
+    <ion-item>
+      <ion-label>Vibrace</ion-label>
+      
+      <ion-toggle [checked]="true" (ionChange)="toggleVibrations()"></ion-toggle><br /><br />
+
+    </ion-item>
+
+    <ion-item>
+      <!-- <ion-button id="open-picker">Open</ion-button> -->
+      <ion-picker trigger="open-picker" [columns]="DaySelection" [buttons]="pickerButtons"></ion-picker>
+    </ion-item>
+
+    <!-- <div class="wrapper">
+      <div class="ion-activatable ripple-parent rounded-rectangle">
+        <ion-icon name="bed"></ion-icon>
+        Nezaspíš!
+        <ion-ripple-effect></ion-ripple-effect>
+      </div>
+    </div> -->
+
+    <ion-grid alignment="center">
+      <ion-row>
+        <ion-col><div class="wrapper" alignment="center">
+          <div class="ion-activatable ripple-parent rounded-rectangle">
+            <ion-icon name="bed"></ion-icon>
+            Nezaspíš!
+            <ion-ripple-effect></ion-ripple-effect>
+          </div>
+        </div></ion-col>
+        
+      </ion-row>
+    </ion-grid>
+
+
+
+
+
+    <!-- Tlačítko pro uložení nastavení budíku -->
+    <ion-button expand="block" class="submit-button" (click)="saveAlarmSettings()">Uložit budík</ion-button>
+  </div>
+</ion-content>

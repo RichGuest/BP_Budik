@@ -1,22 +1,48 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
-const routes: Routes = [
-  {
-    path: 'home',
-    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
-  },
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  },
-];
+import { ZacatekComponent } from './zacatek.component';
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot([
+      {
+        path: '',
+        component: ZacatekComponent,
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            redirectTo: 'budik',
+          },
+          {
+            path: 'budik',
+            loadChildren: () => import('./budik/budik-page.module').then((m) => m.BudikPageModule),
+          },
+          {
+            path: 'casovac',
+            loadChildren: () => import('./casovac/casovac-page.module').then((m) => m.CasovacPageModule),
+          },
+          {
+            path: 'stopky',
+            loadChildren: () => import('./stopky/stopky-page.module').then((m) => m.StopkyPageModule),
+          },
+          {
+            path: 'alarm-create',
+            loadChildren: () => import('./alarm-create/alarm-create.module').then( m => m.AlarmCreatePageModule)
+          },
+          {
+            path:'permissions',
+            loadChildren: () => import('./permissions/permissions.module').then (m => m.PermissionsPageModule)
+          },
+          {
+            path:'vypnuti-swipe',
+            loadChildren: () => import('./vypnuti-swipe/vypnuti-swipe.module').then (m => m.VypnutiSwipePageModule)
+          },
+        ],
+      },
+    ]),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

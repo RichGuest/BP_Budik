@@ -1,0 +1,64 @@
+
+.plus_tlacitko {
+  justify-content: center;
+  display: flex;
+  font-size: 500%;
+
+}
+
+.budik-page{
+  display: flex;
+  justify-content: center;
+  color: aqua;
+}
+.text{
+  font-size: 200%;
+  color: beige;
+}
+
+.dny{
+  justify-content: center;
+  display: flex;
+  
+  
+}
+ion-badge{
+  
+  --font-size: 50%; /* Upravuje velikost písma badge */
+  --padding-end: 20px;
+  --padding-start: 20px;
+  --padding-bottom: 15px;
+  --padding-top: 15px;
+  
+}
+.badges{
+  display: flex;
+  justify-content: center;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.vibrace{
+  font-size: 150%;
+  color: beige;
+}
+
+.ikonka{
+  font-size: 200%;
+}
+
+ion-card-content div {
+  display: flex; /* Toto nastaví flexbox */
+  align-items: center; /* Toto zarovná položky ve flex kontejneru vertikálně na stejnou úroveň */
+  justify-content: flex-start; /* Toto zarovná položky vlevo */
+}
+
+.obrazky{
+  width: 50%; /* Nastaví obrázek na plnou šířku karty */
+  height: auto; /* Udrží poměr stran obrázku */
+  display: block; /* Zobrazí obrázek jako blokový prvek */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0%;
+   
+}

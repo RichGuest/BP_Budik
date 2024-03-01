@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">budik</string>
+    <string name="title_activity_main">budik</string>
+    <string name="package_name">budik.runner.check</string>
+    <string name="custom_url_scheme">budik.runner.check</string>
+</resources>
