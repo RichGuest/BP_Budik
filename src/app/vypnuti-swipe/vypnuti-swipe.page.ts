@@ -26,9 +26,9 @@ export class VypnutiSwipePage implements OnInit {
 
   constructor(
     private gestureCtrl: GestureController,
-    private toastCtrl: ToastController,
-  ) {
-    
+    //private toastCtrl: ToastController,
+  ) 
+  {
     setInterval(() => {
       const now = new Date();
       // Získání hodin a minut a jejich spojení do formátu HH:MM
@@ -39,6 +39,7 @@ export class VypnutiSwipePage implements OnInit {
 
   ngOnInit() {
   }
+  
   ngAfterViewInit() {
     this.createSwipeGesture();
   }
@@ -55,13 +56,17 @@ export class VypnutiSwipePage implements OnInit {
       onMove: (detail) => {
         if (this.swipeInProgress && detail.deltaX > 0) {
           const deltaX = detail.deltaX;
-          console.log('deltax: ', deltaX);
           const colWidth = this.swipeButton.nativeElement.parentElement.clientWidth;
           this.colWidth = colWidth - (20 / 100 * colWidth); 
-          console.log('colWidth: ', this.colWidth);
           this.translateX = Math.min(deltaX, this.colWidth);
-          console.log('translatex: ', this.translateX);
-          this.swipeButton.nativeElement.style.transform = `translateX(${this.translateX}px)`;
+      
+          // Ověření, že translateX je konečné číslo
+          if (Number.isFinite(this.translateX)) {
+            this.swipeButton.nativeElement.style.transform = `translateX(${this.translateX}px)`;
+          } else {
+            // Pokud translateX není konečné číslo, měli byste zde implementovat nějaké zotavení
+            console.error('translateX is not finite', this.translateX);
+          }
         }
       },
       onEnd: (detail) => {

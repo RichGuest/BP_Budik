@@ -1,19 +1,27 @@
 
 import { CapacitorConfig } from '@capacitor/cli';
 
-import { BackgroundRunner } from '@capacitor/background-runner';
+
 const config: CapacitorConfig = {
   appId: 'budik.runner.check',
   appName: 'budik',
   webDir: 'www',
   bundledWebRuntime: false,
   plugins: {
+    // BackgroundRunner:{
+    //   label: 'budik.check',
+    //   src: 'runners/runner.js',
+    //   event: 'budikcheck',
+    //   repeat: true,
+    //   interval: 1,
+    //   autoStart: true
+    // },
     BackgroundRunner:{
-      label: 'budik.runner.check',
+      label: 'checkAlarms',
       src: 'runners/runner.js',
-      event: 'budikcheck',
+      event: 'alarm.check',
       repeat: true,
-      interval: 1,
+      interval: 60,
       autoStart: true
     }
 

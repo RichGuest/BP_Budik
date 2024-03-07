@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, ToastController } from '@ionic/angular';
 import { AlarmService, AlarmData } from '../alarm.service';
 
 
@@ -14,11 +14,21 @@ export class budikPageComponent implements OnInit {
   alarms: AlarmData[] = [];
 
 
-  constructor(private navCtrl: NavController, private alarmService: AlarmService) { }
+  constructor(private navCtrl: NavController, private alarmService: AlarmService,private toastController: ToastController) { }
 
 
-  toggleAlarm(index: number) {
+  async toggleAlarm(index: number) {
     this.alarmService.toggleAlarm(index);
+    const alarm = this.alarms[index];
+  
+    if (alarm.enabled) {
+      const timeUntilAlarm = this.calculateTimeUntilAlarm(alarm.time,alarm.days);
+      const toast = await this.toastController.create({
+        message: `Alarm will ring in ${timeUntilAlarm}`,
+        duration: 2000
+      });
+      toast.present();
+    }
   }
 
   alarmCreate() {
@@ -82,5 +92,35 @@ export class budikPageComponent implements OnInit {
       return 'assets/Card_pictures/sun.svg';
     }
   }
+  calculateTimeUntilAlarm(alarmTime: string, alarmDays: string[]): string {
+    const now = new Date();
+    const currentDayIndex = now.getDay(); // 0 = neděle, 1 = pondělí, atd.
+    const dayNames = ['N', 'P', 'Ú', 'St', 'Č', 'Pá', 'So']; // Přiřazení indexů dnům
+    const todayName = dayNames[currentDayIndex];
+  
+    let closestDayDiff = 7; // Maximální počet dní v týdnu
+    alarmDays.forEach(day => {
+      let dayIndex = this.dayIndexes[day];
+      let dayDiff = dayIndex - currentDayIndex;
+      if (dayDiff < 0) dayDiff += 7; // Pokud je den v minulosti, přičte 7 pro výpočet do příštího týdne
+      if (dayDiff < closestDayDiff) closestDayDiff = dayDiff; // Najde nejbližší den
+    });
+  
+    const alarmDate = new Date(now);
+    alarmDate.setDate(now.getDate() + closestDayDiff); // Nastaví datum na nejbližší den alarmu
+    alarmDate.setHours(parseInt(alarmTime.split(':')[0]), parseInt(alarmTime.split(':')[1]), 0, 0); // Nastaví čas
+  
+    const diff = alarmDate.getTime() - now.getTime(); // Rozdíl v milisekundách
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+    let message = '';
+    if (days > 0) message += `${days} den/dny, `;
+    message += `${hours} hodin a ${minutes} minut`;
+  
+    return message;
+  }
+  
 }
 

@@ -158,23 +158,30 @@ export class AlarmCreatePage implements OnInit, OnDestroy {
 
     },
   ];
-
-
-
+  
+  
+  
   constructor(private router: Router, private alarmService: AlarmService) { }
-
+  
   async ngOnInit() {
     // Přednačtěte zvuky zde
     await this.preloadTone('AirCraft', 'AircraftAlarmSoundEffect.mp3');
     await this.preloadTone('Beep-Beep', 'AlarmClockBeep.mp3');
     await this.preloadTone('iPhone', 'iPhoneAlarmSound.mp3');
-
+    
     // Přihlásit se k odběru událostí navigace
     this.routerSubscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.stopAllTones();
       }
     });
+  }
+  async preloadTone(assetId: string, assetPath: string) {
+    try {
+      await NativeAudio.preload({ assetId, assetPath });
+    } catch (error) {
+      console.error('Error preloading tone:', error);
+    }
   }
   getSelectedToneName(): string {
     // Vraťte název vybraného tónu, případně můžete přidat logiku pro získání skutečného názvu
@@ -230,13 +237,6 @@ export class AlarmCreatePage implements OnInit, OnDestroy {
       } catch (error) {
         console.error('Error setting volume:', error);
       }
-    }
-  }
-  async preloadTone(assetId: string, assetPath: string) {
-    try {
-      await NativeAudio.preload({ assetId, assetPath });
-    } catch (error) {
-      console.error('Error preloading tone:', error);
     }
   }
 

@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, interval } from 'rxjs';
 import { Platform } from '@ionic/angular';
-import { startWith, switchMap } from 'rxjs/operators';
 import { BackgroundRunner } from '@capacitor/background-runner';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { NavController } from '@ionic/angular'
-
+import { NativeAudio } from '@capacitor-community/native-audio';
 export interface AlarmData {
   time: string;
   days: string[];
@@ -13,70 +12,72 @@ export interface AlarmData {
   tone: string;
   enabled: boolean;
   id: string;
+
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlarmService {
+
   private alarms = new BehaviorSubject<AlarmData[]>(this.loadAlarms());
   alarms$ = this.alarms.asObservable();
-
-  private backgroundTaskId: string | null = null;
   constructor(private platform: Platform, private navCtrl: NavController) {
     this.init();
-    if (this.platform.is('hybrid')) {
-      
-      
+    {
+
+
     }
   }
 
   toggleAlarm(index: number) {
     const alarms = this.loadAlarms();
-    alarms[index].enabled = !alarms[index].enabled;
+    const alarm = alarms[index];
+    alarm.enabled = !alarm.enabled;
     this.saveAlarms(alarms);
     this.alarms.next(alarms);
+    if (alarm.enabled) {
+      this.startBackgroundCheck(); // Spustí pozadovou kontrolu pro nově povolený alarm
+    }
   }
 
-  async showNotification(alarm: AlarmData) {
-    await LocalNotifications.schedule({
-      notifications: [{
-        title: 'Alarm',
-        body: 'Your alarm is ringing. Swipe to turn off.',
-        id: new Date().getTime(), // Use something unique for the ID
-        extra: { alarmId: alarm.id } // Pass the alarm's ID or some identifier
-      }]
-      
-    });
-    LocalNotifications.addListener('localNotificationActionPerformed', (notification) => {
-      // Check notification.extra to see which alarm it is, then navigate to the swipe-off page
-      this.navCtrl.navigateForward("/vypnuti-swipe");
+  async startBackgroundCheck() {
+    const backgroundTaskId = await BackgroundRunner.dispatchEvent({
+      label: 'checkAlarms',
+      event: 'alarm.check',
+      details: {}
     });
   }
-  
-  async init (){
-    try{
+
+
+
+
+
+
+  async init() {
+    try {
       const permissions = await BackgroundRunner.requestPermissions({
-        apis: ['geolocation','notifications']
+        apis: ['geolocation', 'notifications']
       });
       console.log(permissions);
-    } catch 
-      (error) {console.log(error)};
-    
+      this.checkAlarms();
+    } catch
+    (error) { console.log(error) };
+
   }
-  
-  async testSave(){
-    const result = await  BackgroundRunner.dispatchEvent({
-      label: 'budik.runner.check',
+
+  async testSave() {
+    const result = await BackgroundRunner.dispatchEvent({
+      label: 'budik.check',
       event: 'testSave',
       details: {}
     });
     console.log(result);
   }
 
-  async testLoad(){
-    const result = await  BackgroundRunner.dispatchEvent({
-      label: 'budik.runner.check',
+  async testLoad() {
+    const result = await BackgroundRunner.dispatchEvent({
+      label: 'budik.check',
       event: 'testLoad',
       details: {}
     });
@@ -111,32 +112,50 @@ export class AlarmService {
   }
 
   checkAlarms() {
-    // Zde se nastavuje interval na 60 sekund (60000 ms)
-    const checkInterval = interval(60000).pipe(
-      startWith(0), // Run immediately at start
-      switchMap(async () => {
-          // Get current time and date
-          const now = new Date();
-          const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-          const currentDay = now.getDay(); // 0 is Sunday, 1 is Monday, etc.
-  
-          // Get alarms
-          const alarms = this.loadAlarms();
-  
-          // Find any alarms that should be going off
-          const triggeredAlarms = alarms.filter(alarm => {
-            return alarm.enabled && alarm.days.includes(currentDay.toString()) && alarm.time === currentTime;
-          });
-  
-          // Trigger alarms
-          triggeredAlarms.forEach(alarm => {
-            this.showNotification(alarm); // Trigger the notification for the alarm
-          });
-  
-          return triggeredAlarms; // You can return alarms here or handle them as needed
-        })
-      )
-      .subscribe();
-  }
+    try {
+      const now = new Date();
+      const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+      const currentDay = now.getDay().toString();
 
+      // Get alarms
+      const alarms = this.loadAlarms();
+
+      // Find any alarms that should be going off
+      const triggeredAlarms = alarms.filter(alarm => {
+        return alarm.enabled && alarm.days.includes(currentDay) && alarm.time === currentTime;
+      });
+
+      // If there are any alarms, show the notification and navigate to the swipe page
+      triggeredAlarms.forEach(async alarm => {
+
+        await LocalNotifications.schedule({
+          notifications: [{
+            title: "Alarm",
+            body: "Your alarm is ringing!",
+            id: parseInt(alarm.id),
+            schedule: { at: new Date(new Date().getTime() + 1000) }, // Schedule immediately for demo purposes
+            sound: alarm.tone,
+            //attachments: null,
+            actionTypeId: "",
+            extra: null
+          }]
+        });
+
+      });
+    }
+    catch
+    (error) { console.log(error) };
+  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
